@@ -34,7 +34,11 @@ class UserController extends ApiController
           'password' => 'required|min:6|confirmed' 
         ];
 
-        $this->validate($request, $rules);
+        $validator = $request->validate($rules);
+
+        if ($validator->errors()) { 
+          return response()->json($validator->errors(), 400);
+        }
 
         $data = $request->all();
         $data['password'] = bcrypt($request->password);
@@ -76,8 +80,13 @@ class UserController extends ApiController
           'admin' => 'in:' . User::ADMIN_USER . ',' . User::REGULAR_USER,
         ];
 
-        $this->validate($request, $rules);
+        $validator = $request->validate($rules);
 
+        if ($validator->errors()) { 
+          return response()->json($validator->errors(), 400);
+        }
+
+        
         if ($request->has('name')) {
           $user->name = $request->name;
         }
